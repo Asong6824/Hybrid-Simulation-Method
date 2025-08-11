@@ -1,0 +1,27 @@
+# ninja log v5
+2	30	1752999571682677888	VA/dpu/CMakeFiles/VA_device.dir/task.c.o	e29fd13ead214e4
+1	35	1752999571687677930	BS/dpu/CMakeFiles/BS_device.dir/task.c.o	37ae58ab976f0d88
+2	36	1752999571687677930	TS/dpu/CMakeFiles/TS_device.dir/task.c.o	e8dff188db7aaba7
+1	36	1752999571687677930	MLP/dpu/CMakeFiles/MLP_device.dir/task.c.o	2fc219ac47a55dc7
+31	40	0	VA/dpu/VA_device	abf5c1465af18abc
+35	44	0	BS/dpu/BS_device	4144aecf36797c5
+2	44	1752999571695677996	RED/dpu/CMakeFiles/RED_device.dir/task.c.o	346310776ba49ed0
+36	44	0	TS/dpu/TS_device	288f5e37529903ab
+36	44	0	MLP/dpu/MLP_device	6b8d6a5fbf5ebb75
+1	47	1752999571698678022	HST-S/dpu/CMakeFiles/HST-S_device.dir/task.c.o	39c8093f42841f0b
+44	52	0	RED/dpu/RED_device	1d123c34cfb7c2b2
+47	55	0	HST-S/dpu/HST-S_device	44ceb94809bbb3f0
+1	56	1752999571707678096	HST-L/dpu/CMakeFiles/HST-L_device.dir/task.c.o	b970232b1febcb53
+1	61	1752999571713678146	GEMV/dpu/CMakeFiles/GEMV_device.dir/task.c.o	805157afcc325578
+56	64	0	HST-L/dpu/HST-L_device	e1b4b144eb877b5e
+2	65	1752999571717678179	TRNS/dpu/CMakeFiles/TRNS_device.dir/task.c.o	2055a60d40dbe99a
+62	71	0	GEMV/dpu/GEMV_device	dc5696201d3e6e5e
+2	74	1752999571725678246	SEL/dpu/CMakeFiles/SEL_device.dir/task.c.o	6b186fd0609c6233
+2	74	1752999571726678254	SCAN-SSA/dpu/CMakeFiles/SCAN-SSA_device.dir/task.c.o	f1a2a2628996c1a7
+65	75	0	TRNS/dpu/TRNS_device	4046e66b3dfc8583
+2	80	1752999571732678304	SCAN-RSS/dpu/CMakeFiles/SCAN-RSS_device.dir/task.c.o	ed5dd080bbce6c3a
+74	87	0	SEL/dpu/SEL_device	3e9d99bff3256b6a
+74	87	0	SCAN-SSA/dpu/SCAN-SSA_device	17fbebfed59c7b5d
+81	90	0	SCAN-RSS/dpu/SCAN-RSS_device	bfdcf3eaff7f42c6
+2	111	1752999571763678562	UNI/dpu/CMakeFiles/UNI_device.dir/task.c.o	2820ee88d1d80dd4
+111	120	0	UNI/dpu/UNI_device	136f9d867f0986c4

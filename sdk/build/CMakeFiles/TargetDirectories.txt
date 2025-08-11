@@ -1,0 +1,11 @@
+/root/uPIMulator/sdk/build/CMakeFiles/edit_cache.dir
+/root/uPIMulator/sdk/build/CMakeFiles/rebuild_cache.dir
+/root/uPIMulator/sdk/build/misc/CMakeFiles/misc.dir
+/root/uPIMulator/sdk/build/misc/CMakeFiles/edit_cache.dir
+/root/uPIMulator/sdk/build/misc/CMakeFiles/rebuild_cache.dir
+/root/uPIMulator/sdk/build/stdlib/CMakeFiles/stdlib.dir
+/root/uPIMulator/sdk/build/stdlib/CMakeFiles/edit_cache.dir
+/root/uPIMulator/sdk/build/stdlib/CMakeFiles/rebuild_cache.dir
+/root/uPIMulator/sdk/build/syslib/CMakeFiles/syslib.dir
+/root/uPIMulator/sdk/build/syslib/CMakeFiles/edit_cache.dir
+/root/uPIMulator/sdk/build/syslib/CMakeFiles/rebuild_cache.dir

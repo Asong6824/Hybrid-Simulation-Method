@@ -1,0 +1,11 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "setup-path",
+            "type": "shell",
+            "command": "mkdir -p ${workspaceFolder}/bin ${workspaceFolder}/image",
+            "problemMatcher": []
+        },
+    ]
+}

@@ -1,0 +1,12 @@
+{
+    "files.associations": {
+        "sysdef.h": "c",
+        "defs.h": "c",
+        "dpuruntime.h": "c",
+        "barrier.h": "c",
+        "common.h": "c",
+        "random": "c"
+    },
+    "C_Cpp.errorSquiggles": "disabled",
+    "cmake.sourceDirectory": "/home/asong/桌面/uPIMulator/golang/uPIMulator/benchmark"
+}
