@@ -18,18 +18,6 @@ Our hybrid approach enables **accurate full-application analysis** by:
 
 - **Standard UPMEM SDK**: Regular UPMEM SDK package (users need to install and manually modify linker scripts)
 - **Modified uPIMulator**: Updated with compatible memory layout and symbol alignment
-- **PrIM Benchmarks Suite**: Reference implementation for code structure (see limitations below)
-
-### Important Note on PrIM Benchmarks
-
-**PrIM benchmarks** were originally proposed in early UPMEM architecture research and have become widely used as a standard test suite in the research community. **uPIMulator**, as an unofficial cycle-accurate simulator, includes PrIM benchmark code for validation and accuracy verification.
-
-However, **our hybrid simulation method has a technical limitation**: it does not support host-to-DPU data transfer during the simulation process. Therefore:
-
-- The PrIM benchmarks  in this repository serve as **code reference only**
-- They demonstrate DPU program structure and can be used as templates for developing your own programs
-- **They are not intended for direct execution** in the hybrid simulation workflow
-- Users should develop their own DPU programs or adapt existing ones to work within the hybrid simulation constraints
 
 ## Prerequisites
 
@@ -67,7 +55,7 @@ However, **our hybrid simulation method has a technical limitation**: it does no
    } > mram
    ```
    
-   **Why this modification is needed**: uPIMulator allocates debug information sections before the `.mram` section, causing address misalignment. This reserved space ensures both simulators use identical memory layouts.
+   **Why this modification is needed**: uPIMulator allocates debug information sections before the `.mram` section, causing address misalignment between the UPMEM SDK simulator and uPIMulator. This reserved space ensures both simulators use identical memory layouts.
    
    The complete MRAM section should look like:
    ```ld
@@ -126,11 +114,11 @@ The hybrid simulation method follows a 4-step process that combines functional s
 
 - Initialize data directly in DPU memory (WRAM/MRAM)
 - Do not rely on runtime host data transfers
-- Use the PrIM benchmarks as reference for code writing, compilation, and execution patterns
 
-**Example DPU Program Structure**:
+**Complete Example DPU Program**:
+
+1. **Create the DPU program** (`dpu/dpu_program.c`):
 ```c
-// dpu/dpu_program.c
 #include <stdint.h>
 #include <stdio.h>
 #include <defs.h>
@@ -139,14 +127,82 @@ The hybrid simulation method follows a 4-step process that combines functional s
 #include <perfcounter.h>
 #include <barrier.h>
 
+#define DATA_SIZE 1024
+
 // Initialize data in MRAM (no host transfer)
-__mram uint32_t input_data[DATA_SIZE];
+__mram uint32_t input_data[DATA_SIZE] = {1, 2, 3, 4, 5}; // Sample initialization
 __mram uint32_t output_data[DATA_SIZE];
 
 int main() {
-    // Initialize data directly in DPU
-    // Perform computation
-    // Write results to MRAM
+    // Simple vector addition example
+    for (int i = 0; i < DATA_SIZE; i++) {
+        output_data[i] = input_data[i] + 1;
+    }
+    return 0;
+}
+```
+
+2. **Create a minimal Makefile**:
+```makefile
+DPU_DIR := dpu
+HOST_DIR := host
+BUILDDIR := bin
+
+NR_TASKLETS := 16
+NR_DPUS := 1
+
+# DPU binary
+DPU_TARGET := ${BUILDDIR}/dpu_code
+DPU_SOURCES := $(wildcard ${DPU_DIR}/*.c)
+
+# Host binary  
+HOST_TARGET := ${BUILDDIR}/host_code
+HOST_SOURCES := $(wildcard ${HOST_DIR}/*.c)
+
+.PHONY: all clean
+
+all: ${DPU_TARGET} ${HOST_TARGET}
+
+${BUILDDIR}:
+	mkdir -p ${BUILDDIR}
+
+${DPU_TARGET}: ${DPU_SOURCES} | ${BUILDDIR}
+	dpu-upmem-dpurte-clang ${DPU_SOURCES} -o $@ -DNR_TASKLETS=${NR_TASKLETS}
+
+${HOST_TARGET}: ${HOST_SOURCES} | ${BUILDDIR}
+	gcc ${HOST_SOURCES} -o $@ `dpu-pkg-config --cflags --libs dpu` -DNR_DPUS=${NR_DPUS} -DNR_TASKLETS=${NR_TASKLETS}
+
+clean:
+	rm -rf ${BUILDDIR}
+```
+
+3. **Create a simple host program** (`host/host_program.c`):
+```c
+#include <stdio.h>
+#include <stdlib.h>
+#include <dpu.h>
+
+#ifndef NR_DPUS
+#define NR_DPUS 1
+#endif
+
+int main() {
+    struct dpu_set_t dpu_set, dpu;
+    
+    // Allocate DPUs
+    DPU_ASSERT(dpu_alloc(NR_DPUS, NULL, &dpu_set));
+    
+    // Load DPU program
+    DPU_ASSERT(dpu_load(dpu_set, "bin/dpu_code", NULL));
+    
+    // Launch DPU program
+    DPU_ASSERT(dpu_launch(dpu_set, DPU_SYNCHRONOUS));
+    
+    printf("DPU program executed successfully\n");
+    
+    // Free DPUs
+    DPU_ASSERT(dpu_free(dpu_set));
+    
     return 0;
 }
 ```
@@ -160,8 +216,7 @@ int main() {
    cd your-dpu-program/
    make
    ```
-   
-   **Note**: For Makefile structure and build configuration, you can reference the Makefiles in the PrIM benchmarks (e.g., `prim-benchmarks/VA/Makefile`, `prim-benchmarks/GEMV/Makefile`) to understand the proper compilation flags, linking options, and build targets for DPU programs.
+
 
 2. **Run functional simulation using UPMEM SDK**:
    ```bash
@@ -189,8 +244,9 @@ int main() {
    cd uPIMulator/
    # Edit run_uPIMulator.sh: set LOAD_LOCAL=0
    sed -i 's/LOAD_LOCAL=.*/LOAD_LOCAL=0/' run_uPIMulator.sh
-   # Set benchmark to match your choice (e.g., VA)
-   sed -i 's/BENCHMARK=.*/BENCHMARK="VA"/' run_uPIMulator.sh
+   # Set benchmark name to match your DPU program directory name
+   # Replace "your_benchmark" with the actual name of your benchmark directory
+   sed -i 's/BENCHMARK=.*/BENCHMARK="your_benchmark"/' run_uPIMulator.sh
    ```
 
 2. **Generate debug information**:
@@ -204,9 +260,8 @@ int main() {
 **Purpose**: Extract the actual used portions of `.mram` and `.mram_noinit` sections from UPMEM SDK simulator's MRAM image and replace the corresponding parts in uPIMulator's `mram.bin`.
 
 **Key Points**:
-- Only extract the **actually used portions** of `.mram` and `.mram_noinit` sections for performance optimization
+- Only extract the **actually used portions** of `.mram` and `.mram_noinit` sections
 - The specific content to extract depends on your program's memory usage and should be determined by the user
-- This approach avoids copying the entire MRAM image, focusing only on the relevant data sections
 
 ```bash
 # Example: Extract specific .mram and .mram_noinit sections from SDK MRAM dump
