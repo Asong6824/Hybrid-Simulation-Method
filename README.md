@@ -262,6 +262,7 @@ int main() {
 **Key Points**:
 - Only extract the **actually used portions** of `.mram` and `.mram_noinit` sections
 - The specific content to extract depends on your program's memory usage and should be determined by the user
+- Reference examples of memory state fragments are provided in the `mram-image-example/` directory, including sample MRAM images from both SDK simulator (`mram_sdk.bin`) and uPIMulator (`mram_upimulator.bin`)
 
 ```bash
 # Example: Extract specific .mram and .mram_noinit sections from SDK MRAM dump
